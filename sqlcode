@@ -18,9 +18,9 @@ LIMIT 10;
 
 --- calculating the quiz funnel ---
 SELECT question, COUNT(response)
-	FROM survey
-	GROUP BY 1
-	ORDER BY 1 ASC;
+  FROM survey
+  GROUP BY 1
+  ORDER BY 1 ASC;
 
 SELECT (500.00/500.00)*100 AS 'Completed Q1';
 SELECT (475.00/500.00)*100 AS 'Completed Q2';
@@ -121,10 +121,10 @@ WITH conversions AS
 	ELSE 'False'
 	END AS 'is_home_try_on', 
   hto.number_of_pairs,
-  CASE
+	CASE
   WHEN p.user_id IS NOT NULL THEN 'True'
-  ELSE 'False'
-  END AS 'is_purchase'
+	ELSE 'False'
+	END AS 'is_purchase'
 FROM quiz
 LEFT JOIN home_try_on AS 'hto'
 	ON quiz.user_id = hto.user_id
@@ -147,10 +147,10 @@ WITH conversions AS
 	ELSE 'False'
 	END AS 'is_home_try_on', 
   hto.number_of_pairs,
-  CASE
+	CASE
   WHEN p.user_id IS NOT NULL THEN 'True'
-  ELSE 'False'
-  END AS 'is_purchase'
+	ELSE 'False'
+	END AS 'is_purchase'
 FROM quiz
 LEFT JOIN home_try_on AS 'hto'
 	ON quiz.user_id = hto.user_id
