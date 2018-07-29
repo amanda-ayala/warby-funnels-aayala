@@ -1,0 +1,227 @@
+--- begin SQL code ---
+--- getting familiar with the data tables ---
+SELECT *
+FROM survey
+LIMIT 10;
+
+SELECT *
+FROM quiz
+LIMIT 10;
+
+SELECT *
+FROM home_try_on
+LIMIT 10;
+
+SELECT *
+FROM purchase
+LIMIT 10;
+
+--- calculating the quiz funnel ---
+SELECT question, COUNT(response)
+	FROM survey
+	GROUP BY 1
+	ORDER BY 1 ASC;
+
+SELECT (500.00/500.00)*100 AS 'Completed Q1';
+SELECT (475.00/500.00)*100 AS 'Completed Q2';
+SELECT (380.00/475.00)*100 AS 'Completed Q3';
+SELECT (361.00/380.00)*100 AS 'Completed Q4';
+SELECT (270.00/361.00)*100 AS 'Completed Q5';
+
+
+--- joining tables for the home try-on funnel ---
+SELECT quiz.user_id, 
+  CASE
+  WHEN hto.number_of_pairs IS NOT NULL THEN 'True'
+  ELSE 'False'
+  END AS 'is_home_try_on', hto.number_of_pairs,
+
+  CASE
+  WHEN p.user_id IS NOT NULL THEN 'True'
+  ELSE 'False'
+  END AS 'is_purchase'
+FROM quiz
+LEFT JOIN home_try_on AS 'hto'
+	ON quiz.user_id = hto.user_id
+LEFT JOIN purchase AS 'p'
+	ON quiz.user_id = p.user_id
+LIMIT 10;
+
+--- calculating the home try-on funnel ---
+WITH conversions AS 
+  (SELECT quiz.user_id, 
+	CASE
+  WHEN hto.number_of_pairs IS NOT NULL THEN 'True'
+	ELSE 'False'
+	END AS 'is_home_try_on', 
+  hto.number_of_pairs,
+  CASE
+  WHEN p.user_id IS NOT NULL THEN 'True'
+  ELSE 'False'
+  END AS 'is_purchase'
+FROM quiz
+LEFT JOIN home_try_on AS 'hto'
+	ON quiz.user_id = hto.user_id
+LEFT JOIN purchase AS 'p'
+	ON quiz.user_id = p.user_id)
+
+SELECT COUNT(user_id)
+FROM conversions;
+
+WITH conversions AS 
+  (SELECT quiz.user_id, 
+	CASE
+  WHEN hto.number_of_pairs IS NOT NULL THEN 'True'
+	ELSE 'False'
+	END AS 'is_home_try_on', 
+  hto.number_of_pairs,
+  CASE
+  WHEN p.user_id IS NOT NULL THEN 'True'
+  ELSE 'False'
+  END AS 'is_purchase'
+FROM quiz
+LEFT JOIN home_try_on AS 'hto'
+	ON quiz.user_id = hto.user_id
+LEFT JOIN purchase AS 'p'
+	ON quiz.user_id = p.user_id)
+  
+SELECT is_home_try_on, COUNT(user_id)
+FROM conversions
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+WITH conversions AS 
+  (SELECT quiz.user_id, 
+	CASE
+  WHEN hto.number_of_pairs IS NOT NULL THEN 'True'
+	ELSE 'False'
+	END AS 'is_home_try_on', 
+  hto.number_of_pairs,
+  CASE
+  WHEN p.user_id IS NOT NULL THEN 'True'
+  ELSE 'False'
+  END AS 'is_purchase'
+FROM quiz
+LEFT JOIN home_try_on AS 'hto'
+	ON quiz.user_id = hto.user_id
+LEFT JOIN purchase AS 'p'
+	ON quiz.user_id = p.user_id)
+  
+SELECT number_of_pairs, COUNT(user_id)
+FROM conversions
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+WITH conversions AS 
+  (SELECT quiz.user_id, 
+	CASE
+  WHEN hto.number_of_pairs IS NOT NULL THEN 'True'
+	ELSE 'False'
+	END AS 'is_home_try_on', 
+  hto.number_of_pairs,
+  CASE
+  WHEN p.user_id IS NOT NULL THEN 'True'
+  ELSE 'False'
+  END AS 'is_purchase'
+FROM quiz
+LEFT JOIN home_try_on AS 'hto'
+	ON quiz.user_id = hto.user_id
+LEFT JOIN purchase AS 'p'
+	ON quiz.user_id = p.user_id)
+  
+SELECT is_purchase, COUNT(is_purchase)
+FROM conversions
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT (750.00/1000.00)*100 AS 'Completed Home Try-On';
+SELECT (495.00/750.00)*100 AS 'Completed Purchase';
+
+
+WITH conversions AS 
+  (SELECT quiz.user_id, 
+	CASE
+  WHEN hto.number_of_pairs IS NOT NULL THEN 'True'
+	ELSE 'False'
+	END AS 'is_home_try_on', 
+  hto.number_of_pairs,
+  CASE
+  WHEN p.user_id IS NOT NULL THEN 'True'
+  ELSE 'False'
+  END AS 'is_purchase'
+FROM quiz
+LEFT JOIN home_try_on AS 'hto'
+	ON quiz.user_id = hto.user_id
+LEFT JOIN purchase AS 'p'
+	ON quiz.user_id = p.user_id)
+
+SELECT number_of_pairs, COUNT(is_purchase)
+FROM conversions
+WHERE is_purchase = 'True'
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT (294.00/371.00)*100 AS 'Purchased from 5-Pair Group';
+SELECT (201.00/379.00)*100 AS 'Purchased from 3-Pair Group';
+
+
+--- determining top responses to each question in the quiz ---
+
+SELECT style, COUNT(style) AS 'count', (100.*COUNT(style)/1000) AS 'percentage of total'
+FROM quiz
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT fit, COUNT(fit) AS 'count', (100.* COUNT(fit)/1000) AS 'percentage of total'
+FROM quiz
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT shape, COUNT(shape) AS 'count', (100.* COUNT(shape)/1000) AS 'percentage of total'
+FROM quiz
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT color, COUNT(color) AS 'count', (100.* COUNT(color)/1000) AS 'percentage of total'
+FROM quiz
+GROUP BY 1
+ORDER BY 2 DESC;
+
+--- determining top purchases ---
+
+SELECT color, COUNT(color) AS 'count', (100.* COUNT(color)/495) AS 'percentage of total'
+FROM purchase
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT style, COUNT(style) AS 'count', (100.* COUNT(style)/495) AS 'percentage of total'
+FROM purchase
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT model_name, COUNT(model_name) AS 'count', (100.* COUNT(model_name)/495) AS 'percentage of total'
+FROM purchase
+GROUP BY 1
+ORDER BY 2 DESC;
+
+SELECT price, COUNT(price) AS 'count', (100.* COUNT(price)/495) AS 'percentage of total'
+FROM purchase
+GROUP BY 1
+ORDER BY 2 DESC;
+
+--- other findings ---
+
+
+SELECT COUNT(color) AS 'count', (100.* COUNT(color)/495) AS 'percentage of total'
+FROM purchase
+WHERE color LIKE "%Tortoise%";
+
+SELECT color, COUNT(color) AS 'count', (100.* COUNT(color)/495) AS 'percentage of total'
+FROM purchase
+WHERE color LIKE "%Tortoise%"
+GROUP BY 1
+ORDER BY 2 DESC;
+
+--- end file ---
