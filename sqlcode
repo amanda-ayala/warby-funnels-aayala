@@ -213,7 +213,6 @@ ORDER BY 2 DESC;
 
 --- other findings ---
 
-
 SELECT COUNT(color) AS 'count', (100.* COUNT(color)/495) AS 'percentage of total'
 FROM purchase
 WHERE color LIKE "%Tortoise%";
